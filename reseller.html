@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nexus Reseller Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f, #0d1117);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        /* App Container */
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0f, #0d1117);
+            position: relative;
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Header */
+        .app-header {
+            padding: 24px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,0,0,0.2);
+            background: linear-gradient(135deg, rgba(255,0,0,0.1), rgba(0,0,0,0.3));
+        }
+        .app-logo {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff0000, #ff4444);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .app-subtitle {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 4px;
+        }
+        
+        /* Coin Card */
+        .coin-card {
+            background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
+            margin: -20px 20px 20px 20px;
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid rgba(255,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .coin-balance {
+            font-size: 48px;
+            font-weight: 800;
+            color: #ffd700;
+            margin-bottom: 4px;
+        }
+        .coin-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        /* Language Toggle */
+        .lang-toggle {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 20px;
+        }
+        .lang-btn {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .lang-btn.active {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+        }
+        
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            padding: 8px 20px;
+            gap: 16px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+        }
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.5);
+            transition: all 0.2s;
+        }
+        .tab-item i { margin-right: 8px; }
+        .tab-item.active {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,0,0,0.3);
+        }
+        
+        /* Content */
+        .app-content { padding: 20px; padding-bottom: 100px; }
+        
+        /* Cards */
+        .card {
+            background: rgba(20,25,40,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,0,0,0.2);
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ff0000;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(10,12,20,0.8);
+            border: 1px solid rgba(255,0,0,0.3);
+            border-radius: 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        /* Option Grid */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .option-item {
+            background: rgba(10,12,20,0.6);
+            border: 1px solid rgba(255,0,0,0.3);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-item.selected {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border-color: #ff0000;
+        }
+        .option-value { font-size: 18px; font-weight: 700; }
+        .option-label { font-size: 10px; opacity: 0.7; }
+        
+        .price-summary {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .price-amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffd700;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .notification-badge {
+            position: relative;
+        }
+        .badge-dot {
+            position: absolute;
+            top: -4px;
+            right: -8px;
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+        
+        .alert {
+            padding: 14px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+        .alert-success { background: rgba(0,255,136,0.1); border: 1px solid #00ff88; color: #00ff88; }
+        .alert-error { background: rgba(255,0,0,0.1); border: 1px solid #ff0000; color: #ff0000; }
+        .alert-info { background: rgba(160,32,240,0.1); border: 1px solid #a020f0; color: #a020f0; }
+        
+        .history-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,0,0,0.2);
+            border-top-color: #ff0000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Login Gate */
+        .login-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f, #0d1117);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: rgba(20,25,40,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 40px 24px;
+            text-align: center;
+            border: 1px solid rgba(255,0,0,0.3);
+            max-width: 350px;
+            width: 100%;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: rgba(10,12,20,0.8);
+            border: 1px solid rgba(255,0,0,0.3);
+            border-radius: 16px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="status-bar">
+            <span>Nexus Reseller</span>
+            <span><i class="fas fa-signal"></i> <i class="fas fa-battery-full"></i></span>
+        </div>
+        
+        <!-- Login Gate -->
+        <div id="loginGate" class="login-gate">
+            <div class="login-card">
+                <div class="app-logo" style="font-size: 32px;">✦ NEXUS</div>
+                <p style="margin: 16px 0; color: rgba(255,255,255,0.5);">Reseller Panel Login</p>
+                <input type="text" id="resellerUser" placeholder="Username">
+                <input type="password" id="resellerPass" placeholder="Password">
+                <button class="btn btn-primary" onclick="resellerLogin()">Login</button>
+                <div id="loginMsg" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+        
+        <!-- Main App -->
+        <div id="mainApp" style="display: none;">
+            <div class="app-header">
+                <div class="app-logo">✦ NEXUS RESELLER</div>
+                <div class="app-subtitle">Key Management System</div>
+            </div>
+            
+            <!-- Language Toggle -->
+            <div class="lang-toggle">
+                <button class="lang-btn" onclick="setLanguage('id')">🇮🇩 ID</button>
+                <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
+            </div>
+            
+            <!-- Coin Balance -->
+            <div class="coin-card">
+                <div class="coin-balance" id="coinBalance">0</div>
+                <div class="coin-label" id="coinLabel">Your Coin Balance</div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <div class="tab-item active" onclick="switchTab('create')"><i class="fas fa-plus-circle"></i> <span id="tabCreateText">Create Key</span></div>
+                <div class="tab-item" onclick="switchTab('history')"><i class="fas fa-history"></i> <span id="tabHistoryText">History</span></div>
+            </div>
+            
+            <div class="app-content">
+                <!-- Create Key Tab -->
+                <div id="tabCreate">
+                    <div class="card">
+                        <div class="card-title"><i class="fas fa-crown"></i> <span id="createTitle">Generate New Key</span></div>
+                        
+                        <div class="form-group">
+                            <label id="durationLabel">Duration</label>
+                            <div class="option-grid" id="durationOptions"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label id="deviceLabel">Device Limit</label>
+                            <div class="option-grid" id="deviceOptions"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label id="buyerLabel">Buyer Email (Optional)</label>
+                            <input type="email" id="buyerEmail" placeholder="customer@example.com">
+                        </div>
+                        
+                        <div class="price-summary">
+                            <div id="priceLabel" style="font-size: 12px; margin-bottom: 4px;">Total Price</div>
+                            <div class="price-amount" id="totalPrice">0</div>
+                            <div style="font-size: 10px; opacity: 0.5;" id="coinsLabel">Coins</div>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="createBtn" onclick="createKey()">
+                            <i class="fas fa-key"></i> <span id="createBtnText">Create Key</span>
+                        </button>
+                        
+                        <div id="createResult"></div>
+                    </div>
+                </div>
+                
+                <!-- History Tab -->
+                <div id="tabHistory" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fas fa-list"></i> <span id="historyTitle">Transaction History</span></div>
+                        <div id="historyList">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div style="margin-top: 20px;">Processing...</div>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================================
+        // RESELLER PANEL - FULL FEATURES
+        // ============================================================
+        
+        const API_BASE = 'https://system-nexus-key.vercel.app';
+        let token = null;
+        let currentLanguage = 'id';
+        let selectedDuration = 30;
+        let selectedDevice = 1;
+        let userCoins = 0;
+        
+        // Price configuration
+        const DURATION_OPTIONS = [
+            { days: 1, coins: 5, label: { id: '1 Hari', en: '1 Day' } },
+            { days: 3, coins: 12, label: { id: '3 Hari', en: '3 Days' } },
+            { days: 7, coins: 25, label: { id: '7 Hari', en: '7 Days' } },
+            { days: 15, coins: 45, label: { id: '15 Hari', en: '15 Days' } },
+            { days: 30, coins: 80, label: { id: '30 Hari', en: '30 Days' } }
+        ];
+        
+        const DEVICE_OPTIONS = [
+            { limit: 1, extra: 0, label: { id: '1 Device', en: '1 Device' } },
+            { limit: 10, extra: 10, label: { id: '10 Devices', en: '10 Devices' } },
+            { limit: 20, extra: 18, label: { id: '20 Devices', en: '20 Devices' } },
+            { limit: 30, extra: 25, label: { id: '30 Devices', en: '30 Devices' } },
+            { limit: 50, extra: 40, label: { id: '50 Devices', en: '50 Devices' } }
+        ];
+        
+        function getDurationCoins(days) {
+            return DURATION_OPTIONS.find(d => d.days === days)?.coins || 5;
+        }
+        
+        function getDeviceExtra(limit) {
+            return DEVICE_OPTIONS.find(d => d.limit === limit)?.extra || 0;
+        }
+        
+        function calculateTotalPrice() {
+            return getDurationCoins(selectedDuration) + getDeviceExtra(selectedDevice);
+        }
+        
+        function updatePriceDisplay() {
+            const total = calculateTotalPrice();
+            document.getElementById('totalPrice').innerText = total;
+        }
+        
+        function renderDurationOptions() {
+            const container = document.getElementById('durationOptions');
+            container.innerHTML = DURATION_OPTIONS.map(opt => `
+                <div class="option-item ${selectedDuration === opt.days ? 'selected' : ''}" onclick="selectDuration(${opt.days})">
+                    <div class="option-value">${opt.days}</div>
+                    <div class="option-label">${opt.label[currentLanguage]}</div>
+                    <div style="font-size: 10px; margin-top: 4px;">💰 ${opt.coins}</div>
+                </div>
+            `).join('');
+        }
+        
+        function renderDeviceOptions() {
+            const container = document.getElementById('deviceOptions');
+            container.innerHTML = DEVICE_OPTIONS.map(opt => `
+                <div class="option-item ${selectedDevice === opt.limit ? 'selected' : ''}" onclick="selectDevice(${opt.limit})">
+                    <div class="option-value">${opt.limit}</div>
+                    <div class="option-label">${opt.label[currentLanguage]}</div>
+                    <div style="font-size: 10px; margin-top: 4px;">+${opt.extra}</div>
+                </div>
+            `).join('');
+        }
+        
+        function selectDuration(days) {
+            selectedDuration = days;
+            renderDurationOptions();
+            updatePriceDisplay();
+        }
+        
+        function selectDevice(limit) {
+            selectedDevice = limit;
+            renderDeviceOptions();
+            updatePriceDisplay();
+        }
+        
+        function updateLanguage() {
+            const texts = {
+                coinLabel: currentLanguage === 'id' ? 'Saldo Coin Anda' : 'Your Coin Balance',
+                tabCreateText: currentLanguage === 'id' ? 'Buat Key' : 'Create Key',
+                tabHistoryText: currentLanguage === 'id' ? 'Riwayat' : 'History',
+                createTitle: currentLanguage === 'id' ? 'Generate Key Baru' : 'Generate New Key',
+                durationLabel: currentLanguage === 'id' ? 'Durasi' : 'Duration',
+                deviceLabel: currentLanguage === 'id' ? 'Batas Device' : 'Device Limit',
+                buyerLabel: currentLanguage === 'id' ? 'Email Pembeli (Opsional)' : 'Buyer Email (Optional)',
+                priceLabel: currentLanguage === 'id' ? 'Total Harga' : 'Total Price',
+                createBtnText: currentLanguage === 'id' ? 'Buat Key' : 'Create Key',
+                historyTitle: currentLanguage === 'id' ? 'Riwayat Transaksi' : 'Transaction History',
+                coinsLabel: currentLanguage === 'id' ? 'Koin' : 'Coins'
+            };
+            
+            for (const [key, value] of Object.entries(texts)) {
+                const el = document.getElementById(key);
+                if (el) el.innerText = value;
+            }
+            
+            renderDurationOptions();
+            renderDeviceOptions();
+        }
+        
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            updateLanguage();
+            // Save preference ke server
+            if (token) {
+                fetch(`${API_BASE}/api/reseller/language`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, language: lang })
+                }).catch(console.error);
+            }
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+        
+        function showAlert(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+                setTimeout(() => { if (el.innerHTML.includes(message)) el.innerHTML = ''; }, 5000);
+            }
+        }
+        
+        async function resellerLogin() {
+            const username = document.getElementById('resellerUser').value;
+            const password = document.getElementById('resellerPass').value;
+            
+            if (!username || !password) {
+                document.getElementById('loginMsg').innerHTML = '<div class="alert alert-error">Username and password required</div>';
+                return;
+            }
+            
+            showLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/reseller/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    token = data.token;
+                    userCoins = data.user.coins;
+                    currentLanguage = data.user.language || 'id';
+                    document.getElementById('coinBalance').innerText = userCoins;
+                    document.getElementById('loginGate').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'block';
+                    updateLanguage();
+                    loadHistory();
+                    updatePriceDisplay();
+                } else {
+                    document.getElementById('loginMsg').innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+                }
+            } catch (err) {
+                document.getElementById('loginMsg').innerHTML = `<div class="alert alert-error">Connection error</div>`;
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function createKey() {
+            const buyerEmail = document.getElementById('buyerEmail').value;
+            const totalPrice = calculateTotalPrice();
+            
+            if (userCoins < totalPrice) {
+                showAlert('createResult', `Insufficient coins! Need ${totalPrice} coins, you have ${userCoins}`, 'error');
+                return;
+            }
+            
+            showLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/reseller/create-key`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token,
+                        durationDays: selectedDuration,
+                        deviceLimit: selectedDevice,
+                        buyerEmail: buyerEmail
+                    })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    userCoins = data.remainingCoins;
+                    document.getElementById('coinBalance').innerText = userCoins;
+                    showAlert('createResult', `
+                        ✅ Key created successfully!<br>
+                        🔑 Key: <strong>${data.key}</strong><br>
+                        📅 Expires: ${data.expiryFormatted}<br>
+                        📱 Devices: ${data.deviceLimit}<br>
+                        💰 Cost: ${data.price} coins<br>
+                        💎 Remaining: ${data.remainingCoins} coins
+                    `, 'success');
+                    loadHistory();
+                } else {
+                    showAlert('createResult', `❌ ${data.error}`, 'error');
+                }
+            } catch (err) {
+                showAlert('createResult', 'Network error', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_BASE}/api/reseller/history`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    let html = '';
+                    
+                    if (data.keys && data.keys.length > 0) {
+                        html += `<div style="margin-bottom: 16px;"><strong>📋 Generated Keys</strong></div>`;
+                        data.keys.forEach(k => {
+                            html += `
+                                <div class="history-item">
+                                    <div><code>${k.key_text}</code></div>
+                                    <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px;">
+                                        ${k.duration_days} days | ${k.max_devices} devices | ${k.price_coins} coins
+                                    </div>
+                                    <div style="font-size: 10px; color: rgba(255,255,255,0.3);">
+                                        Created: ${new Date(k.created_at).toLocaleString()}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (data.transactions && data.transactions.length > 0) {
+                        html += `<div style="margin: 16px 0 8px;"><strong>💰 Coin Transactions</strong></div>`;
+                        data.transactions.forEach(t => {
+                            const isPositive = t.amount > 0;
+                            html += `
+                                <div class="history-item">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>${t.reason || t.type}</span>
+                                        <span style="color: ${isPositive ? '#00ff88' : '#ff0000'}">${isPositive ? '+' : ''}${t.amount} coins</span>
+                                    </div>
+                                    <div style="font-size: 10px; color: rgba(255,255,255,0.3);">
+                                        ${new Date(t.created_at).toLocaleString()}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (html === '') {
+                        html = '<div class="alert alert-info">No transactions yet</div>';
+                    }
+                    
+                    document.getElementById('historyList').innerHTML = html;
+                }
+            } catch (err) {
+                document.getElementById('historyList').innerHTML = '<div class="alert alert-error">Failed to load history</div>';
+            }
+        }
+        
+        function switchTab(tab) {
+            const tabCreate = document.getElementById('tabCreate');
+            const tabHistory = document.getElementById('tabHistory');
+            const tabs = document.querySelectorAll('.tab-item');
+            
+            if (tab === 'create') {
+                tabCreate.style.display = 'block';
+                tabHistory.style.display = 'none';
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                tabCreate.style.display = 'none';
+                tabHistory.style.display = 'block';
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+                loadHistory();
+            }
+        }
+        
+        // Initial render
+        renderDurationOptions();
+        renderDeviceOptions();
+        updatePriceDisplay();
+    </script>
+</body>
+</html>
