@@ -93,6 +93,8 @@
                         <div class="card-title"><i class="fas fa-crown"></i> Generate New Key</div>
                         <div class="form-group"><label>Duration</label><div class="option-grid" id="durationOptions"></div></div>
                         <div class="form-group"><label>Device Limit</label><div class="option-grid" id="deviceOptions"></div></div>
+                        <div class="form-group"><label><i class="fas fa-lock"></i> Security Binding Type</label><select id="bindingType" class="form-control"><option value="device">🔒 Device Fingerprint (Recommended - Most Secure)</option><option value="ip">🌐 IP Address Lock</option><option value="both">⚡ Both IP & Device (Maximum Security)</option><option value="none">🌍 No Lock (Any device - Insecure)</option></select><small style="color: rgba(255,255,255,0.4);">Device fingerprint locks key to specific browser/device</small>
+                         </div>
                         <div class="form-group"><label>Buyer Email (Optional)</label><input type="email" id="buyerEmail" placeholder="customer@example.com"></div>
                         <div class="price-summary"><div id="priceLabel" style="font-size: 12px; margin-bottom: 4px;">Total Price</div><div class="price-amount" id="totalPrice">0</div><div style="font-size: 10px;">Coins</div></div>
                         <button class="btn btn-primary" id="createBtn" onclick="createKey()"><i class="fas fa-key"></i> Create Key</button>
@@ -136,6 +138,14 @@
         function getDeviceExtra(limit) { return DEVICE_OPTIONS.find(d => d.limit === limit)?.extra || 0; }
         function calculateTotalPrice() { return getDurationCoins(selectedDuration) + getDeviceExtra(selectedDevice); }
         
+        // Toggle custom IP input based on binding type
+document.getElementById('bindingType')?.addEventListener('change', function() {
+    const customGroup = document.getElementById('customIpGroup');
+    if (customGroup) {
+        customGroup.style.display = (this.value === 'ip' || this.value === 'both') ? 'flex' : 'none';
+    }
+});
+
         function updatePriceDisplay() { document.getElementById('totalPrice').innerText = calculateTotalPrice(); }
         
         function renderDurationOptions() {
@@ -191,26 +201,83 @@
         }
         
         async function createKey() {
-            const buyerEmail = document.getElementById('buyerEmail').value;
-            const totalPrice = calculateTotalPrice();
-            if (userCoins < totalPrice) { showAlert('createResult', `Insufficient coins! Need ${totalPrice}, you have ${userCoins}`, 'error'); return; }
-            showLoading(true);
-            try {
-                const res = await fetch(`${API_BASE}/api/reseller/create-key`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUserId, durationDays: selectedDuration, deviceLimit: selectedDevice, buyerEmail })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    userCoins = data.remainingCoins;
-                    document.getElementById('coinBalance').innerText = userCoins;
-                    showAlert('createResult', `✅ Key created: ${data.key}<br>Expires: ${data.expiryFormatted}<br>Cost: ${data.price} coins<br>Remaining: ${data.remainingCoins} coins`, 'success');
-                    loadHistory();
-                } else { showAlert('createResult', `❌ ${data.error}`, 'error'); }
-            } catch(err) { showAlert('createResult', 'Network error', 'error'); }
-            finally { showLoading(false); }
+    // Ambil nilai dari form
+    const buyerEmail = document.getElementById('buyerEmail')?.value || '';
+    const bindingType = document.getElementById('bindingType')?.value || 'device';
+    const totalPrice = calculateTotalPrice();
+    
+    // Validasi saldo
+    if (userCoins < totalPrice) {
+        showAlert('createResult', `❌ Insufficient coins! Need ${totalPrice} coins, you have ${userCoins} coins`, 'error');
+        return;
+    }
+    
+    // Konfirmasi sebelum create
+    if (!confirm(`Create key with:\n📅 Duration: ${selectedDuration} days\n📱 Device Limit: ${selectedDevice} devices\n🔐 Binding: ${bindingType}\n💰 Price: ${totalPrice} coins\n\nYour balance: ${userCoins} coins\n\nContinue?`)) {
+        return;
+    }
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/reseller/create-key`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: currentUserId,
+                durationDays: selectedDuration,
+                deviceLimit: selectedDevice,
+                buyerEmail: buyerEmail,
+                bindingType: bindingType
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update saldo
+            userCoins = data.remainingCoins;
+            document.getElementById('coinBalance').innerText = userCoins;
+            
+            // Format binding message
+            let bindingMsg = '';
+            switch(bindingType) {
+                case 'device': bindingMsg = '🔒 Device Fingerprint Lock'; break;
+                case 'ip': bindingMsg = '🌐 IP Address Lock'; break;
+                case 'both': bindingMsg = '⚡ Both IP & Device Lock'; break;
+                case 'none': bindingMsg = '🌍 No Lock (Insecure)'; break;
+                default: bindingMsg = '🔒 Device Fingerprint Lock';
+            }
+            
+            showAlert('createResult', `
+                ✅ Key created successfully!<br>
+                🔑 Key: <strong>${data.key}</strong><br>
+                📅 Expires: ${data.expiryFormatted}<br>
+                📱 Devices: ${data.deviceLimit}<br>
+                🔐 ${bindingMsg}<br>
+                💰 Cost: ${data.price} coins<br>
+                💎 Remaining: ${data.remainingCoins} coins
+            `, 'success');
+            
+            // Refresh history
+            loadHistory();
+            
+            // Reset form buyer email (optional)
+            document.getElementById('buyerEmail').value = '';
+            
+        } else {
+            showAlert('createResult', `❌ ${data.error}`, 'error');
         }
+        
+    } catch (error) {
+        console.error('Create key error:', error);
+        showAlert('createResult', `❌ Network error: ${error.message}`, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
         
         async function loadHistory() {
             try {
@@ -246,6 +313,7 @@
         }
         
         renderDurationOptions(); renderDeviceOptions(); updatePriceDisplay();
+        
     </script>
 </body>
 </html>
